@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI/CD Workshop</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+        }
+        h1 { color: var(--primary); margin-bottom: 1rem; }
+        .data-list {
+            text-align: left;
+            margin-top: 1.5rem;
+            list-style: none;
+            padding: 0;
+        }
+        .data-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #10b981;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CI/CD Workshop</h1>
+        <p>This page is rendered using <strong>Django Templates</strong>.</p>
+        
+        <div class="data-list">
+            {% for item in items %}
+            <div class="data-item">
+                <strong>{{ item.name }}</strong><br>
+                <small>{{ item.description }}</small>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="status">System Status: Healthy</div>
+    </div>
+</body>
+</html>

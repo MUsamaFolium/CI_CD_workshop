@@ -3,72 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CI/CD Workshop</title>
+    <title>CI/CD Workshop Dashboard</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         :root {
             --primary: #6366f1;
+            --primary-dark: #4f46e5;
             --bg: #0f172a;
+            --bg-secondary: #1e293b;
             --card-bg: #1e293b;
+            --card-hover: #334155;
             --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --border: #334155;
         }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a1f3a 100%);
             color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
+            padding: 2rem 1rem;
         }
-        .container {
-            background-color: var(--card-bg);
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: var(--card-bg);
             padding: 2rem;
             border-radius: 1rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
         }
-        h1 { color: var(--primary); margin-bottom: 1rem; }
-        .data-list {
-            text-align: left;
-            margin-top: 1.5rem;
-            list-style: none;
-            padding: 0;
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
-        .data-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: 0.5rem;
-            border-left: 4px solid var(--primary);
+        h1 {
+            color: var(--primary);
+            font-size: 1.875rem;
+            font-weight: 700;
         }
-        .status {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: #10b981;
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 9999px;
             font-size: 0.875rem;
-            margin-top: 1rem;
+            font-weight: 500;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .header-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9375rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+        .card:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .card-description {
+            color: var(--text-muted);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>CI/CD Workshop Folium AI pvt ltd</h1>
-        <p>This page is rendered using <strong>Django Templates</strong>.</p>
-        
-        <div class="data-list">
+    <div class="dashboard">
+        <div class="header">
+            <div class="header-top">
+                <h1>CI/CD Workshop Dashboard</h1>
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    System Healthy
+                </div>
+            </div>
+            <p class="header-subtitle">Folium AI Pvt Ltd • Powered by Django Templates</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Modules</div>
+                <div class="stat-value">{{ items|length }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Status</div>
+                <div class="stat-value">Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Framework</div>
+                <div class="stat-value">Django</div>
+            </div>
+        </div>
+
+        <div class="cards-grid">
             {% for item in items %}
-            <div class="data-item">
-                <strong>{{ item.name }}</strong><br>
-                <small>{{ item.description }}</small>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        {% if forloop.counter == 1 %}🚀
+                        {% elif forloop.counter == 2 %}⚙️
+                        {% else %}🧪
+                        {% endif %}
+                    </div>
+                    <div class="card-title">{{ item.name }}</div>
+                </div>
+                <div class="card-description">{{ item.description }}</div>
             </div>
             {% endfor %}
         </div>
 
-        <div class="status">System Status: Healthy</div>
+        <div class="footer">
+            <p>Last updated: <span id="timestamp"></span></p>
+        </div>
     </div>
+
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    </script>
 </body>
 </html>

@@ -1,22 +1,53 @@
-# Python
+*.pem
+*.key
+*.ppk
+*.crt
+*.cer
+*.pfx
+*.der
+*.csr
+*.jks
+*.keystore
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*.env
+.env
+.env.*
+!.env.example
+
 __pycache__/
 *.py[cod]
 *$py.class
-.env
-venv
-db.sqlite3
-/staticfiles/
 
-# Node
+venv/
+.venv/
+env/
+ENV/
+
+db.sqlite3
+*.sqlite3
+/staticfiles/
+media/
+
 node_modules/
 dist/
 dist-ssr/
 *.local
+npm-debug.log*
+yarn-error.log*
 
-# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# OS
 .DS_Store
 Thumbs.db
+
+coverage/
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.cache/

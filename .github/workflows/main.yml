@@ -9,21 +9,22 @@ on:
 jobs:
   test-backend:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          
-      - name: Install Dependencies
+
+      - name: Install dependencies
         run: |
           cd backend
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Tests
+      - name: Run tests
         run: |
           cd backend
           python manage.py test api.tests
@@ -36,40 +37,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Start SSH agent and add key
+      - name: Start SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      - name: Deploy on EC2
+      - name: Deploy application
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_APP_DIR: ${{ secrets.EC2_APP_DIR }}
         run: |
-          ssh -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" "
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
             set -e
-            cd \"$EC2_APP_DIR\"
 
-            # Pull latest code
+            cd $EC2_APP_DIR
+
+            echo "📥 Pulling latest code"
             git pull origin master
 
-            # Create / reuse virtualenv
-            python3 -m venv venv
+            echo "🐍 Activating virtualenv"
             source venv/bin/activate
 
-            # Install dependencies
-            pip install --upgrade pip
+            echo "📦 Installing dependencies"
             pip install -r backend/requirements.txt
 
-            # Django migrations & static files
+            echo "🗄 Running migrations & collectstatic"
             cd backend
             python manage.py migrate --noinput
             python manage.py collectstatic --noinput
 
-            # Restart Gunicorn (adjust service name if different)
-            sudo systemctl restart gunicorn || sudo systemctl restart django-app || true
-          "
+            echo "🔄 Restarting Gunicorn"
+            sudo systemctl restart gunicorn
+          EOF

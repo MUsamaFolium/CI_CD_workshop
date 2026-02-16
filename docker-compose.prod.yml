@@ -13,8 +13,6 @@ services:
       - db_data:/app/db
       # Persist static files
       - static_volume:/app/staticfiles
-    env_file:
-      - ./backend/.env
     command: >
       sh -c "python manage.py migrate --noinput &&
              python manage.py collectstatic --noinput &&

@@ -13,21 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Install dependencies
+      - name: Build Docker image
         run: |
-          cd backend
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          docker build -t django-backend:test ./backend
 
-      - name: Run tests
+      - name: Run tests in Docker container
         run: |
-          cd backend
-          python manage.py test api.tests
+          docker run --rm django-backend:test python manage.py test api.tests
 
 
   deploy-backend:
@@ -58,17 +53,15 @@ jobs:
             echo "📥 Pulling latest code"
             git pull origin master
 
-            echo "🐍 Activating virtualenv"
-            source venv/bin/activate
+            echo "🐳 Reloading systemd units (in case service changed)"
+            sudo systemctl daemon-reload
 
-            echo "📦 Installing dependencies"
-            pip install -r backend/requirements.txt
+            echo "🔄 Restarting Docker Compose CI/CD service"
+            sudo systemctl restart docker-compose-cicd
 
-            echo "🗄 Running migrations & collectstatic"
-            cd backend
-            python manage.py migrate --noinput
-            python manage.py collectstatic --noinput
+            echo "📋 Docker Compose CI/CD service status"
+            sudo systemctl status docker-compose-cicd --no-pager -l || true
 
-            echo "🔄 Restarting Gunicorn"
-            sudo systemctl restart gunicorn
+
+            echo "✅ Deployment completed successfully"
           EOF

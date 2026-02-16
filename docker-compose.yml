@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: django_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount code for development (hot reload)
+      - ./backend:/app
+      # Exclude node_modules and venv from mount to avoid conflicts
+      - /app/venv
+      - /app/__pycache__
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-django-insecure-m6r3@o#9tzjc+^kqvg=&aof&-v3w=t-&q-cmwr0#8ws9!pg&0b}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-True}
+    env_file:
+      - ./backend/.env
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py collectstatic --noinput &&
+             gunicorn --bind 0.0.0.0:8000 --workers 3 --reload core.wsgi:application"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 300s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

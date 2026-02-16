@@ -53,20 +53,15 @@ jobs:
             echo "📥 Pulling latest code"
             git pull origin master
 
-            echo "🐍 Activating virtual environment"
-            source venv/bin/activate
-
-            echo "📦 Installing/updating dependencies"
-            pip install -r backend/requirements.txt
-
-            echo "🗄 Running migrations & collectstatic"
-            cd backend
-            python manage.py migrate --noinput
-            python manage.py collectstatic --noinput
-
-            echo "🔄 Restarting Gunicorn service"
+            echo "🐳 Reloading systemd units (in case service changed)"
             sudo systemctl daemon-reload
-            sudo systemctl restart gunicorn
+
+            echo "🔄 Restarting Docker Compose CI/CD service"
+            sudo systemctl restart docker-compose-cicd
+
+            echo "📋 Docker Compose CI/CD service status"
+            sudo systemctl status docker-compose-cicd --no-pager -l || true
+
 
             echo "✅ Deployment completed successfully"
           EOF

@@ -50,6 +50,9 @@ jobs:
 
             cd $EC2_APP_DIR
 
+            echo "🧹 Cleaning generated staticfiles to avoid git conflicts"
+            rm -rf backend/staticfiles
+
             echo "📥 Pulling latest code"
             git pull origin master
 
